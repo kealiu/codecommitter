@@ -28,6 +28,7 @@ def session_check(request: Request, call_next):
         return call_next(request)
 
     if 'user' not in request.session or not request.session['user']:
+        #raise HTTPException(status_code=401, detail="username or password wrong, user not found")    
         return JSONResponse(status_code=403, content={"status_code": 403, "message": "not login"})
 
     return call_next(request)
@@ -41,8 +42,13 @@ def user_login(req: Request,  auth: schema.Authorization, db: Session = Depends(
     req.session['user'] = me.dict()
     return me
 
+@app.get('/favicon.ico')
+def get_favicon_ico():
+    raise HTTPException(status_code=404)    
+
 # for debug static web app
-app.mount("/app", StaticFiles(directory="../web"), name="static")
+app.mount("/app/", StaticFiles(directory="../web", html = True), name="static")
+
 
 app.add_middleware(SessionMiddleware, secret_key="SomeSecret1234%^&*")
 
@@ -62,6 +68,12 @@ def api_startup():
     checksum = root.name+hashlib.sha256(root.name.encode()).hexdigest()+root.passwd+hashlib.sha256(root.passwd.encode()).hexdigest()
     root.passwd = hashlib.sha256(checksum.encode()).hexdigest()
     try:
-        curd.User.new(dbsession, root)
-    except:
-        print("already exist")
+        rootuser = curd.User.new(dbsession, root)
+        rootuser.arn = "n/a"
+        rootuser.ccname = "n/a"
+        rootuser.ccpasswd = "n/a"
+        rootuser.ccpolicy = "n/a"
+        rootuser.active = True
+        u = curd.User.update(dbsession, rootuser)
+    except Exception as e:
+        print(e)

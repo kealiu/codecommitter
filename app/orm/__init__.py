@@ -26,6 +26,11 @@ class User(Base):
     email = Column(String(128), unique=True, nullable=False)
     active = Column(Boolean, default=True)
     desc = Column(String, default="n/a")
+    arn = Column(String, nullable=True)
+    ccid = Column(String, nullable=True)
+    ccpasswd = Column(String, nullable=True)
+    ccname = Column(String, nullable=True)
+    ccpolicy = Column(String, nullable=True)
 
     perms = relationship("Perm", back_populates="user")
     projects = relationship("ProjectAdmin", back_populates="user")
@@ -47,8 +52,7 @@ class ProjectAdmin(Base):
     id = Column(Integer, primary_key=True)#, autoincrement=True)
     userid = Column(Integer, ForeignKey("user.id"), nullable=False)
     projectid = Column(Integer, ForeignKey("project.id"), nullable=False)
-    desc = Column(String, default="n/a")
-
+    
     user = relationship("User", back_populates="projects")
     project = relationship("Project", back_populates="admins")
 

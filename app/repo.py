@@ -14,8 +14,8 @@ def tag(proj, team, name, key, val):
 def list(project, team):
     return yun.CloudRepo.list()
 
-def create(proj, team, name, desc):
-    return yun.CloudRepo.create(_reponame(proj, team, name), desc)
+def create(proj, team, name, desc, tags):
+    return yun.CloudRepo.create(_reponame(proj, team, name), desc, tags)
 
 def delete(proj, team, name):
     return yun.CloudRepo.delete(_reponame(proj, team, name))

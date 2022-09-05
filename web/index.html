@@ -1,0 +1,72 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- Load required Bootstrap and BootstrapVue CSS -->
+        <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
+        <!-- Load the following for vue bootstrap support -->
+        <link type="text/css" rel="stylesheet" href="css/bootstrap-vue.min.css" />
+        <title>Code Commit</title>
+    </head>
+    <body>
+        <div id="app">
+            <app-header>
+              
+            </app-header>
+            <div>
+                <app-nav>
+                    <b-container class="bv-example-row">
+                        <b-row>
+                            <b-col cols="3">
+                                <b-nav vertical class="w-25">
+                                  <b-nav-item v-if="shared.perms.isroot"> 
+                                    <router-link to="/project/"> Project </router-link>
+                                    <BR>&ensp;<router-link to="/project/0"> New </router-link>
+                                </b-nav-item>
+                                  <b-nav-item v-if="shared.perms.admins"> 
+                                    <router-link to="/team/"> Team </router-link>
+                                    <BR>&ensp;<router-link to="/team/0"> New </router-link> 
+                                  </b-nav-item>
+                                  <b-nav-item> 
+                                    <router-link to="/user/"> User </router-link>
+                                    <BR>&ensp;<router-link to="/user/0"> New </router-link> 
+                                  </b-nav-item>
+                                  <b-nav-item> 
+                                    <router-link to="/repo/"> Repo </router-link>
+                                    <BR>&ensp;<router-link to="/repo/0"> New </router-link> 
+                                  </b-nav-item>
+                                </b-nav>
+                            </b-col>
+                            <b-col cols="9">
+                                <router-view>  </router-view>
+                            </b-col>
+                        </b-row>
+                    </b-container>
+                </app-nav>
+            </div>
+            <app-footer></app-footer>
+        </div>
+        
+        <script src="js/vue.min.js"></script>
+
+        <!-- Load the following for vuex support -->
+        <script src="js/vuex.js"></script>
+        
+        <!-- Load the following for vue router support -->
+        <script src="js/vue-router.js"></script>
+
+        <!-- Load polyfills to support older browsers -->
+        <script src="js/polyfill.min.js" crossorigin="anonymous"></script>
+
+        <!-- Load Vue followed by BootstrapVue -->
+        <script src="js/bootstrap-vue.min.js"></script>
+
+        <!-- Load the following for BootstrapVueIcons support -->
+        <script src="js/bootstrap-vue-icons.min.js"></script>
+
+        <script src="js/sha256.min.js"></script>
+        <script src="js/axios.min.js"></script>
+        <script src="components.js"></script>
+        <script src="main.js"></script>
+    </body>
+</html>

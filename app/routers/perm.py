@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from db import getsession
-import schema, curd
+import schema, curd, cloud
 
 router = APIRouter()
 

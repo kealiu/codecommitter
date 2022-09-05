@@ -10,12 +10,19 @@ router = APIRouter()
 # the 'prefix' will be defined in main.py
 
 @router.get("/", response_model=List[schema.Team]) # get /?projid=1
-def team_list(projid: int, db: Session = Depends(getsession)):
-    return curd.Team.get_all(db, projid)
+def team_list(db: Session = Depends(getsession)):
+    return curd.Team.get_all(db)
 
 @router.post("/", response_model=schema.Team)
 def team_new(team: schema.TeamNew, db: Session = Depends(getsession)):
     return curd.Team.new(db, team)
+
+@router.get("/name/{team}", response_model=schema.Team)
+def team_detail_by_name(team: str, db: Session = Depends(getsession)):
+    tm = curd.Team.get_by_name(db, team)
+    if not tm:
+        raise HTTPException(status_code=404, detail="team not found")
+    return tm
 
 @router.put("/{teamid}", response_model=schema.Team)
 def team_update(teamid: int, newteam: schema.TeamNew, db: Session = Depends(getsession)):
@@ -25,7 +32,10 @@ def team_update(teamid: int, newteam: schema.TeamNew, db: Session = Depends(gets
 
 @router.get("/{teamid}", response_model=schema.Team)
 def team_detail(teamid: int, db: Session = Depends(getsession)):
-    return curd.Team.get(db, teamid)
+    team = curd.Team.get(db, teamid)
+    if not team:
+        raise HTTPException(status_code=404, detail="team not found")
+    return team
 
 @router.delete("/{teamid}", response_model=schema.Team)
 def team_detail(teamid: int, db: Session = Depends(getsession)):

@@ -133,6 +133,10 @@ class ProjectAdmin:
     def get_all(db: Session, projid: int, skip: int = 0):
         return db.query(orm.ProjectAdmin).filter(orm.ProjectAdmin.projectid == projid).offset(skip).all()
 
+    staticmethod
+    def get_all_by_user(db: Session, userid: int, skip: int = 0):
+        return db.query(orm.ProjectAdmin).filter(orm.ProjectAdmin.userid == userid).offset(skip).all()
+
     @staticmethod
     def new(db: Session, pa: schema.ProjectAdminNew):
         newpa = orm.ProjectAdmin(**pa.dict())
@@ -199,6 +203,10 @@ class TeamAdmin:
         return db.query(orm.TeamAdmin).filter(orm.TeamAdmin.teamid == teamid).offset(skip).all()
 
     @staticmethod
+    def get_all_by_user(db: Session, userid: int, skip: int = 0):
+        return db.query(orm.TeamAdmin).filter(orm.TeamAdmin.userid == userid).offset(skip).all()
+
+    @staticmethod
     def new(db: Session, ta: schema.TeamAdminNew):
         newta = orm.TeamAdmin(**ta.dict())
         db.add(newta)
@@ -237,8 +245,16 @@ class Repo:
         return db.query(orm.Repo).filter(orm.Repo.name == name).offset(skip).all()
 
     @staticmethod
+    def get_all_repo_writer(db: Session, repoid: int):
+        return db.query(orm.Repo, orm.Perm, orm.User).filter(orm.Repo.id == repoid).filter(orm.Perm.id == orm.Repo.id).filter(orm.Perm.perm == 'write').all()
+
+    @staticmethod
+    def get_all_repo_reader(db: Session, repoid: int):
+        return db.query(orm.Repo, orm.Perm, orm.User).filter(orm.Repo.id == repoid).filter(orm.Perm.id == orm.Repo.id).filter(orm.Perm.perm == 'read').all()
+
+    @staticmethod
     def new(db: Session, repo: schema.RepoNew):
-        newrepo = orm.Repo(**repo.dict())
+        newrepo = orm.Repo(**dict(repo))
         db.add(newrepo)
         db.commit()
         db.refresh(newrepo)
@@ -276,6 +292,14 @@ class Perm:
         return db.query(orm.Perm).filter(orm.Perm.userid == userid).all()
 
     @staticmethod
+    def get_by_user_read(db: Session, userid: id):
+        return db.query(orm.Perm).filter(orm.Perm.userid == userid).filter(orm.Perm.perm == 'read').all()
+    
+    @staticmethod
+    def get_by_user_write(db: Session, userid: id):
+        return db.query(orm.Perm).filter(orm.Perm.userid == userid).filter(orm.Perm.perm == 'write').all()
+
+    @staticmethod
     def new(db: Session, perm: schema.PermNew):
         newperm = orm.Perm(**perm.dict())
         db.add(newperm)
@@ -295,3 +319,11 @@ class Perm:
         db.delete(perm)
         db.commit()
         return keeperm
+    
+    @staticmethod
+    def delete_by_query(db: Session, perm: str, userid: str, repoid: str):
+        p = db.query(orm.Perm).filter(orm.Perm.userid == userid).filter(orm.Perm.repoid == repoid).filter(orm.Perm.perm == perm).first()
+        kp = p 
+        db.delete(p)
+        db.commit()
+        return kp

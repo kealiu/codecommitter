@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Any
 from orm import Project
 
 from pydantic import BaseModel, constr
@@ -35,6 +35,7 @@ class Repo(RepoNew):
     arn: str
     url: str
     repoid: str
+    perms: List[Perm] = []
     class Config:
         orm_mode = True
 
@@ -64,6 +65,8 @@ class TeamNew(TeamBase):
 class Team(TeamBase):
     id: int
     perms: List[Perm] = []
+    admins: List[TeamAdmin] = []
+    repos: List[Repo] = []
 
     class Config:
         orm_mode = True
@@ -79,17 +82,17 @@ class ProjectNew(ProjectBase):
 class Project(ProjectBase):
     id: int
     teams: List[Team] = []
+    admins: List
     class Config:
         orm_mode = True
 
 # define ProjectAdmin
 class ProjectAdminBase(BaseModel):
-    name: constr(min_length=3, max_length=24)
-    desc: Union[str, None] = None
-
-class ProjectAdminNew(ProjectAdminBase):
     userid: int
     projectid: int
+
+class ProjectAdminNew(ProjectAdminBase):
+    pass
 
 class ProjectAdmin(ProjectAdminBase):
     id: int
@@ -113,10 +116,11 @@ class UserNew(UserBase):
 
 class User(UserBase):
     id: int
+    arn: str
+    ccname: str
+    ccpasswd: str
+    ccpolicy: str
     active: bool
-    perms: List[Perm] = []
-    projects: List[Project] = []
-    teams: List[Team] = []
 
     class Config:
         orm_mode = True
@@ -125,3 +129,7 @@ class User(UserBase):
 class ResourceTag(BaseModel):
     key: str
     val: str
+
+# RepoUser
+class RepoUser(BaseModel):
+    user: str

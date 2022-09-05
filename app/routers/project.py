@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from sqlalchemy.orm import Session
 from typing import List
@@ -17,6 +17,13 @@ def proj_list(db: Session = Depends(getsession)):
 def proj_new(proj: schema.ProjectNew, db: Session = Depends(getsession)):
     return curd.Project.new(db, proj)
 
+@router.get("/name/{projname}", response_model=schema.Project)
+def proj_list_by_name(projname: str, db: Session = Depends(getsession)):
+    prj = curd.Project.get_by_name(db, projname)
+    if not prj:
+        raise HTTPException(status_code=404, detail="project not found")
+    return prj
+
 @router.put("/{projid}", response_model=schema.Project)
 def proj_update(projid: int, newproj: schema.ProjectNew, db: Session = Depends(getsession)):
     theproj = curd.Project.get(db, projid)
@@ -25,7 +32,10 @@ def proj_update(projid: int, newproj: schema.ProjectNew, db: Session = Depends(g
 
 @router.get("/{projid}", response_model=schema.Project)
 def proj_detail(projid: int, db: Session = Depends(getsession)):
-    return curd.Project.get(db, projid)
+    prj = curd.Project.get(db, projid)
+    if not prj:
+        raise HTTPException(status_code=404, detail="project not found")
+    return prj
 
 @router.delete("/{projid}", response_model=schema.Project)
 def proj_detail(projid: int, db: Session = Depends(getsession)):
